@@ -1,0 +1,15 @@
+# Java build output
+out/
+build_check/
+*.class
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local environment secrets
+.env
+.env.*
+!.env.example

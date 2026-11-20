@@ -1,0 +1,5 @@
+out
+build_check
+.git
+*.zip
+*.log

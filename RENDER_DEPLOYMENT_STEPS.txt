@@ -1,0 +1,84 @@
+PLAYZONE — GITHUB + RENDER DEPLOYMENT CHECKLIST
+================================================
+
+IMPORTANT: This version is prepared for two separate Render services:
+1) Java backend as a Docker Web Service.
+2) Static HTML/CSS/JS frontend as a Render Static Site.
+
+BEFORE PUSHING
+--------------
+[ ] Extract/open the PlayZone_Web folder.
+[ ] Review README.md and AI_LOG.txt.
+[ ] Check web/config.js. It should remain /api for local same-origin testing.
+[ ] Compile Java and run locally.
+[ ] Open http://localhost:8080 and test all sections.
+[ ] Do not commit passwords, API keys, or .env files.
+
+GITHUB
+------
+From the PlayZone_Web directory:
+
+    git init
+    git add .
+    git commit -m "Prepare PlayZone for Render deployment"
+    git branch -M main
+    git remote add origin https://github.com/YOUR-USERNAME/PlayZone.git
+    git push -u origin main
+
+If origin already exists, inspect it first:
+
+    git remote -v
+
+If needed, update it:
+
+    git remote set-url origin https://github.com/YOUR-USERNAME/PlayZone.git
+
+BACKEND ON RENDER
+-----------------
+Create New > Web Service, connect GitHub repository.
+Runtime: Docker.
+Dockerfile: ./Dockerfile.
+Health check path: /api/health.
+Environment variable:
+    CORS_ALLOWED_ORIGIN=https://YOUR-FRONTEND.onrender.com
+
+Render supplies PORT automatically.
+Deploy, then copy the backend URL.
+
+FRONTEND ON RENDER
+------------------
+First update web/config.js to the real backend URL:
+
+    window.PLAYZONE_API_BASE = "https://YOUR-BACKEND.onrender.com/api";
+
+Commit and push this change:
+
+    git add web/config.js
+    git commit -m "Configure production backend API URL"
+    git push
+
+Create New > Static Site, same repository.
+Root directory: web (if repository root is PlayZone_Web).
+Build command: leave empty.
+Publish directory: .
+
+Deploy and copy the frontend URL. Set the backend CORS_ALLOWED_ORIGIN to
+that exact URL in Render and redeploy backend.
+
+SMOKE TEST
+----------
+[ ] Backend /api/health returns status ok.
+[ ] Backend /api/gamebond/members returns 50 profiles.
+[ ] Frontend loads without missing CSS/JS.
+[ ] Inventory loads.
+[ ] Create a rental and view report.
+[ ] Smart Insights loads.
+[ ] Reality Rift runs.
+[ ] GameBond shows demo circles, can recommend and join.
+[ ] Browser console has no CORS or failed network requests.
+
+KNOWN LIMITATION
+----------------
+The application currently uses in-memory state, not a persistent database.
+Render restarts/redeployments can reset rentals, stock changes and joined
+GameBond groups. The 50 sample profiles/lobbies are seeded again at startup.

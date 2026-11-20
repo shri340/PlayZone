@@ -1,0 +1,435 @@
+PLAYZONE — AI DEVELOPMENT LOG
+================================
+Project: PlayZone — Sports Equipment Rental Management System
+Log type: AI-assisted development history, feature changes, prompts and test notes
+Last updated: 20 November 2026
+
+IMPORTANT NOTE ABOUT PROMPTS
+----------------------------
+This file records the development work and the intent of the prompts used during
+the conversation. Prompt entries below are faithful summaries/reconstructions of
+the requests, not guaranteed verbatim transcripts of every message. The log
+distinguishes implemented functionality from ideas that were only discussed.
+No real student/member personal data is included in the demo profiles.
+
+1. PROJECT OVERVIEW
+-------------------
+PlayZone is a Java-based sports equipment rental management project created for
+a hackathon/demo. It was extended into a locally hosted web application so that
+the rental system and its additional features can be demonstrated through a
+browser.
+
+Main goals:
+- Manage sports equipment inventory.
+- Create rentals and calculate bills.
+- Apply borrower-type discounts and GST.
+- Validate equipment availability and handle invalid requests safely.
+- Maintain rental history and reports.
+- Provide useful decision-support and social matchmaking features.
+- Run locally from VS Code without requiring an external database or framework.
+
+2. TECHNOLOGY AND ARCHITECTURE
+------------------------------
+Backend:
+- Java
+- Java's built-in com.sun.net.httpserver.HttpServer
+- Lightweight JSON request/response handling
+- In-memory arrays for demo data and session state
+
+Frontend:
+- HTML
+- CSS
+- Vanilla JavaScript
+- Fetch API calls to the local Java backend
+
+Runtime:
+- Default server port: 8080
+- Local browser URL: http://localhost:8080
+- Optional custom port: -Dplayzone.port=8091
+
+No external database or third-party Java web framework is required by this
+local demo version. In-memory rental, lobby and profile data resets when the
+server process is restarted.
+
+3. TEAM DETAILS
+---------------
+Team members supplied for the project log:
+1. Sambhram N
+2. Hemavati
+3. Kavya
+4. Akshay
+5. Shrihari
+
+4. DEVELOPMENT HISTORY AND IMPLEMENTED CHANGES
+-----------------------------------------------
+
+A. Original Java rental-management foundation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The project began as a Java sports equipment rental management application.
+The core concepts and files include:
+- Equipment model
+- Rental and RentalItem models
+- Person, Borrower, Student and Staff classes
+- Billable interface
+- ItemStack service
+- Custom equipment exceptions
+- Main Java entry point
+
+Core equipment seeded in the web demonstration:
+- ID 101 — Cricket Bat — Cricket — ₹80/day — 10 starting units
+- ID 102 — Football — Football — ₹50/day — 12 starting units
+- ID 103 — Badminton Racket — Badminton — ₹40/day — 20 starting units
+- ID 104 — Tennis Racket — Tennis — ₹90/day — 8 starting units
+- ID 105 — Basketball — Basketball — ₹50/day — 10 starting units
+- ID 106 — Carrom Board — Indoor — ₹60/day — 6 starting units
+
+Billing rules in the web version:
+- GST: 18%
+- Student discount: 10%
+- Staff discount: 15%
+
+Inventory safety:
+- Requested quantities are validated before stock is changed.
+- Rental line items and the rental object are created before committing stock
+  deductions.
+- This avoids deducting inventory for an invalid or unsuccessful rental.
+
+B. Currency display request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A currency display issue was discussed where the rupee symbol appeared as a
+question mark in some output. A Unicode rupee representation was discussed.
+The web frontend uses a Unicode escape for the rupee symbol:
+    "\u20B9"
+
+Important: the original standalone Java code's currency formatting was not
+confirmed as updated by the user. Do not assume every original Java output
+location has been fixed just because the web frontend displays ₹ correctly.
+
+C. Local browser-based website
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Java project was extended into a local website with a Java HTTP server and
+a browser frontend.
+
+Files:
+- src/playzone/web/PlayZoneWebServer.java
+- web/index.html
+- web/styles.css
+- web/app.js
+- README_WEB.txt
+- run_playzone.bat
+
+Implemented website areas include:
+- Dashboard
+- Equipment inventory
+- New rental form
+- Rental bill preview and generated bill
+- Rental history
+- Reports
+- Smart insights
+- Reality Rift
+- GameBond
+
+The backend exposes API routes for equipment, rentals, reports, insights and
+GameBond. Static website files are served by the same Java process.
+
+D. Smart Stock Guardian / Smart Insights
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A Smart Insights page was added to the website.
+
+Purpose:
+Provide transparent stock and demand information using the rental activity
+recorded in the current server session.
+
+Implemented calculations:
+- Total rental transactions
+- Quantity rented for each equipment type
+- Rental frequency per equipment type
+- Relative demand score
+- Low-stock and critical-stock indicators
+- Suggested restock quantity relative to the starting stock
+- Identification of the current demand leader
+
+Risk labels:
+- CRITICAL: 3 or fewer units available
+- WATCH: fewer than 10 units available
+- HEALTHY: 10 or more units available
+
+The insights are rule-based calculations over actual in-session rental records.
+They are NOT a trained machine-learning model and should not be described as
+AI forecasting.
+
+E. Reality Rift — scenario simulator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A feature named Reality Rift was added as a scenario-planning simulator.
+
+Available example scenarios:
+- Calm Campus
+- Tournament Surge
+- Monsoon Flip
+
+User controls include:
+- Participant count
+- Chaos/demand multiplier
+- Option to include an unsaved rental draft in the scenario
+
+The simulator reads current equipment availability and estimates:
+- Projected demand
+- Stock that can be served
+- Potential shortages
+- Coverage score
+- Suggested counter-move / rescue plan
+
+Reality Rift is a deterministic, illustrative scenario simulator. It does not
+reserve or deduct actual inventory. Its demand profiles are predefined
+assumptions, not live event data and not machine-learning predictions.
+
+F. GameBond — campus multiplayer matchmaking and cost sharing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GameBond was added as a social feature to help people find others to play
+multiplayer or group games with and share estimated expenses.
+
+Supported games:
+- Chess
+- Carrom
+- Badminton
+- Football
+- Basketball
+- Table Tennis
+- Volleyball
+- Cricket
+
+Player profile preferences:
+- Nickname
+- Game
+- Skill level (Beginner, Intermediate, Advanced)
+- Preferred time (Morning, Afternoon, Evening)
+- Maximum per-person budget
+
+Create-group fields:
+- Game
+- Skill level
+- Time slot
+- Player capacity
+- Estimated total expense
+
+Matching logic:
+- The selected game must match.
+- Same preferred time adds compatibility points.
+- Skill similarity adds compatibility points.
+- A group is excluded if the estimated share exceeds the player's budget.
+- Full groups and groups already containing the searching nickname are excluded.
+- Matches are sorted by compatibility score.
+
+Compatibility is a transparent, deterministic rule-based score. It is not an
+AI-trained recommendation model.
+
+Joining a group:
+- Adds the nickname to the group's member list.
+- Updates the player count.
+- Recalculates the estimated per-person share using total estimated cost divided
+  by the updated number of players.
+
+Safety and prototype limitations:
+- Nicknames only; no phone numbers, email addresses or precise location.
+- No chat, payments, real-time notifications or identity verification.
+- Groups are held in memory and reset when the server restarts.
+- The expense share is an estimate, not a payment request or transaction.
+- Players should confirm venue, availability and final expense before meeting.
+
+G. GameBond — 50 fictional demo member profiles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The latest update added 50 synthetic GameBond member profiles. The profiles are
+automatically seeded when the Java server starts.
+
+Each fictional profile contains:
+- Nickname (CampusPlayer01 through CampusPlayer50)
+- Preferred game
+- Skill level
+- Preferred time slot
+- Per-person budget
+- demo=true marker in the member API response
+
+Each of the 50 profiles also hosts one open demo game circle. This makes the
+GameBond discovery area populated immediately for a hackathon presentation and
+allows the matching algorithm to be demonstrated without manually creating
+the first groups.
+
+The profiles are fictional demonstration records. They are not real students,
+not scraped from a campus directory, and not collected personal information.
+The same deterministic sample set is recreated at server startup.
+
+New API:
+- GET /api/gamebond/members — returns the 50 demo member profiles.
+
+Existing GameBond APIs:
+- GET /api/gamebond/lobbies — returns open game circles.
+- POST /api/gamebond/lobbies — creates a game circle.
+- POST /api/gamebond/recommend — finds compatible groups.
+- POST /api/gamebond/join — joins a group.
+
+5. PROMPT / REQUEST HISTORY (RECONSTRUCTED SUMMARIES)
+-----------------------------------------------------
+The following captures the intent of the prompts and requests made during
+development. These are summaries, not a claim that every line is verbatim.
+
+Prompt 1 — Java hackathon project:
+"Build/help with a Java sports equipment rental management system for a
+hackathon. Include rental billing, recursive subtotal calculation, exception
+handling, test results and a log.txt file containing the team members."
+
+Prompt 2 — Currency formatting:
+"Help fix the currency output so that the rupee symbol (₹) displays instead of
+a question mark."
+
+Prompt 3 — Local website:
+"Create a working website for the Java project that I can host/run locally in
+VS Code."
+
+Prompt 4 — Smart / standout feature:
+"Add a highly novel, impressive feature to make the project stand out during
+the hackathon."
+
+Prompt 5 — Smart inventory feature:
+"Add a feature that can analyse equipment demand and stock and provide useful
+insights or restocking suggestions."
+
+Prompt 6 — Reality Rift:
+"Add a more advanced scenario simulator that can show what happens to sports
+equipment demand under different campus situations, such as a tournament or
+unexpected demand surge."
+
+Prompt 7 — GameBond:
+"Add another novel feature: if someone wants to play multiplayer games such as
+chess, carrom or other games, recommend other players so they can share the
+expense and enjoy the activity together. Make it an extremely impressive
+feature."
+
+Prompt 8 — Seed demo users:
+"Create 50 member model profiles, feed them into the system and provide the
+updated project file."
+
+Prompt 9 — AI development log:
+"Create an AI log.txt file containing all changes made so far, the prompts and
+related development information."
+
+6. VALIDATION AND TESTING NOTES
+-------------------------------
+Latest 50-member GameBond update:
+- Java compilation completed successfully using javac.
+- JavaScript syntax validation completed successfully using node --check.
+- Local server smoke test was run on port 8097.
+- GET /api/gamebond/members returned HTTP 200 and exactly 50 profiles.
+- GET /api/gamebond/lobbies returned HTTP 200 and exactly 50 open groups.
+- POST /api/gamebond/recommend returned HTTP 200 and produced compatible
+  recommendations for a sample Chess / Intermediate / Evening player.
+- The tested recommendation response included a compatibility score and
+  estimated expense share.
+
+These checks validate the latest demo seeding and API flow. They do not replace
+a full user acceptance test across every browser and interaction.
+
+7. HOW TO RUN THE PROJECT
+-------------------------
+Open the extracted PlayZone_Web folder in VS Code.
+
+From PowerShell in the project root:
+
+    javac -encoding UTF-8 -d out src/playzone/Main.java src/playzone/model/*.java src/playzone/people/*.java src/playzone/exceptions/*.java src/playzone/service/*.java src/playzone/web/*.java
+
+    java -cp out playzone.web.PlayZoneWebServer
+
+Then open:
+
+    http://localhost:8080
+
+Keep the terminal running while using the website.
+
+To use a different port:
+
+    java -Dplayzone.port=8091 -cp out playzone.web.PlayZoneWebServer
+
+Then open http://localhost:8091.
+
+8. KEY API ROUTES
+-----------------
+GET  /api/equipment
+GET  /api/insights
+GET  /api/report
+GET  /api/rentals
+POST /api/rentals
+GET  /api/rentals/{id}
+
+GET  /api/gamebond/members
+GET  /api/gamebond/lobbies
+POST /api/gamebond/lobbies
+POST /api/gamebond/recommend
+POST /api/gamebond/join
+
+9. CURRENT LIMITATIONS / HONEST DEMO DESCRIPTION
+------------------------------------------------
+- This is a local prototype, not a production campus platform.
+- Data is stored in memory; server restart resets rentals and GameBond groups.
+- The 50 GameBond profiles are synthetic sample data.
+- GameBond matching and Smart Insights are rule-based, not trained AI.
+- Reality Rift uses illustrative scenario assumptions.
+- No real payment gateway, chat, push notifications, account login, identity
+  verification or live location service is implemented.
+- Do not present synthetic members as actual enrolled students.
+- Do not claim that the prototype uses machine learning unless a real trained
+  model is added and integrated.
+
+10. SUGGESTED FUTURE WORK (NOT YET IMPLEMENTED)
+-----------------------------------------------
+Ideas that can be considered in a later version:
+- Persistent database (for example PostgreSQL or SQLite).
+- Student authentication and verified campus accounts.
+- Admin moderation and reporting for GameBond groups.
+- Real-time group chat and notifications.
+- Venue availability and booking integration.
+- Payment splitting through a compliant payment provider.
+- Tournament creation and team balancing.
+- Member profile editing and opt-in privacy controls.
+- Historical analytics and exportable reports.
+- Automated tests for all APIs and frontend flows.
+
+END OF AI DEVELOPMENT LOG
+
+
+11. RENDER DEPLOYMENT PREPARATION (20 NOVEMBER 2026)
+--------------------------------------------------
+A deployment-ready project variant was prepared for separate Render frontend
+and backend services.
+
+Changes:
+- Added Dockerfile using Eclipse Temurin Java 17 build and runtime images.
+- Added .dockerignore and .gitignore.
+- Backend now reads Render's PORT environment variable, while retaining the
+  local playzone.port fallback.
+- Added GET /api/health for service health checks.
+- Backend CORS origin is configurable with CORS_ALLOWED_ORIGIN; the wildcard
+  remains the local-development fallback.
+- Added web/config.js so the frontend API base URL can be changed without
+  editing the main application logic.
+- Updated app.js to use window.PLAYZONE_API_BASE, falling back to /api.
+- Updated index.html to load config.js before app.js.
+- Added README.md with project overview, architecture, API routes, limitations,
+  local run steps and Render deployment outline.
+- Added RENDER_DEPLOYMENT_STEPS.txt with GitHub and Render checklist.
+
+Deployment architecture:
+Browser -> Render Static Site (HTML/CSS/JS) -> HTTPS API calls ->
+Render Docker Web Service (Java 17) -> current in-memory arrays.
+
+Validation after deployment preparation:
+- Java source compilation passed.
+- Node.js syntax check for app.js passed.
+- Local smoke test with PORT=8098 passed.
+- GET /api/health returned HTTP 200.
+- GET /api/gamebond/members returned 50 profiles.
+- GET /api/equipment returned 6 equipment records.
+
+Important:
+This deployment variant still uses in-memory application data. Deploying the
+backend does not add persistence. Rentals, stock changes and joined GameBond
+lobbies may reset after service restart/redeploy. A database integration is
+a separate future task.

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayZone | Sports Rental Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">P</span><div><strong>PlayZone</strong><small>SPORTS RENTALS</small></div></div>
+      <div class="nav-label">WORKSPACE</div>
+      <button class="nav-link active" data-view="dashboard"><span>▦</span> Dashboard</button>
+      <button class="nav-link" data-view="inventory"><span>▤</span> Equipment</button>
+      <button class="nav-link" data-view="new-rental"><span>＋</span> New rental</button>
+      <button class="nav-link" data-view="history"><span>◷</span> Rental history</button>
+      <button class="nav-link" data-view="reports"><span>▥</span> Reports</button>
+      <button class="nav-link" data-view="insights"><span>✦</span> Smart insights</button>
+      <button class="nav-link rift-nav" data-view="reality-rift"><span>◈</span> Reality Rift <b class="new-tag">GODM0DE</b></button>
+      <button class="nav-link bond-nav" data-view="gamebond"><span>♡</span> GameBond <b class="new-tag">NEW</b></button>
+      <div class="sidebar-bottom"><div class="status-dot"></div><span>Local server connected</span></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">SPORTS ROOM MANAGEMENT</p><h1 id="page-title">Dashboard</h1></div>
+        <div class="top-actions"><span class="live-pill"><i></i> SYSTEM ONLINE</span><div class="avatar">PZ</div></div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="welcome"><div><p class="eyebrow light">WELCOME TO PLAYZONE</p><h2>Manage rentals.<br><em>Keep the game moving.</em></h2><p>Track equipment, issue rentals and keep every transaction organised.</p><button class="primary-btn" data-go="new-rental">＋ Create new rental</button></div><div class="welcome-art"><div class="orb">PZ</div><span class="art-caption">SPORTS ROOM · CONTROL DESK</span></div></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span class="stat-icon violet">↗</span><p>Total rentals</p><strong id="stat-rentals">0</strong><small>Successful transactions</small></article>
+          <article class="stat-card"><span class="stat-icon green">₹</span><p>Total revenue</p><strong id="stat-revenue">₹0.00</strong><small>Including GST</small></article>
+          <article class="stat-card"><span class="stat-icon orange">▤</span><p>Equipment types</p><strong id="stat-equipment">6</strong><small>In the inventory</small></article>
+          <article class="stat-card"><span class="stat-icon blue">!</span><p>Low stock items</p><strong id="stat-low">0</strong><small>Below 10 available units</small></article>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">QUICK OVERVIEW</p><h2>Equipment availability</h2></div><button class="text-btn" data-go="inventory">View all equipment →</button></div>
+        <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Equipment</th><th>Category</th><th>Rent / day</th><th>Available units</th><th>Status</th></tr></thead><tbody id="dashboard-equipment"></tbody></table></div></div>
+      </section>
+
+      <section id="inventory" class="view">
+        <div class="section-heading"><div><p class="eyebrow">INVENTORY CONTROL</p><h2>Equipment list</h2><p class="muted">Live availability updates after every successful rental.</p></div></div>
+        <div class="table-card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Equipment</th><th>Category</th><th>Rent / day</th><th>Available units</th><th>Status</th></tr></thead><tbody id="inventory-table"></tbody></table></div></div>
+      </section>
+
+      <section id="new-rental" class="view">
+        <div class="section-heading"><div><p class="eyebrow">NEW TRANSACTION</p><h2>Create a rental</h2><p class="muted">Enter borrower details and add the equipment they need.</p></div></div>
+        <div class="rental-layout">
+          <div class="form-card">
+            <div class="card-title"><span class="step">01</span><div><h3>Borrower details</h3><p>Who is borrowing the equipment?</p></div></div>
+            <label>Borrower name<input id="borrower-name" type="text" placeholder="Enter full name" maxlength="70"></label>
+            <label>Borrower type<select id="borrower-type"><option value="Student">Student · 10% discount</option><option value="Staff">Staff · 15% discount</option></select></label>
+            <div class="divider"></div>
+            <div class="card-title"><span class="step">02</span><div><h3>Select equipment</h3><p>Add equipment and quantities to this rental.</p></div></div>
+            <div class="add-row"><label class="grow">Equipment<select id="equipment-select"></select></label><label class="qty-label">Qty<input id="equipment-qty" type="number" min="1" value="1"></label><button id="add-item" class="secondary-btn">Add item</button></div>
+            <div class="draft-list" id="draft-list"><div class="empty-state">No equipment added yet.</div></div>
+            <div class="undo-row"><button id="undo-item" class="text-btn" disabled>↶ Undo last item</button><button id="clear-items" class="text-btn danger-text">Clear selection</button></div>
+            <button id="submit-rental" class="primary-btn full-btn">Create rental & generate bill →</button>
+            <p class="form-note">Stock is updated only after the complete rental request passes validation.</p>
+          </div>
+          <aside class="summary-card"><p class="eyebrow">BILL PREVIEW</p><h3>Rental summary</h3><div id="preview-lines" class="preview-lines"><p class="muted">Your selected items will appear here.</p></div><div class="summary-line"><span>Subtotal</span><strong id="preview-subtotal">₹0.00</strong></div><div class="summary-line"><span id="discount-label">Student discount (10%)</span><strong id="preview-discount">−₹0.00</strong></div><div class="summary-line"><span>GST (18%)</span><strong id="preview-gst">₹0.00</strong></div><div class="summary-total"><span>Estimated total</span><strong id="preview-total">₹0.00</strong></div><div class="collection-note">Final collection room is assigned automatically using the rental token.</div></aside>
+        </div>
+      </section>
+
+      <section id="history" class="view">
+        <div class="section-heading"><div><p class="eyebrow">TRANSACTION RECORDS</p><h2>Rental history</h2><p class="muted">Find previous bills and review successful rentals.</p></div></div>
+        <div class="search-bar"><input id="bill-search" placeholder="Search by rental ID, e.g. RNT1"><button id="search-bill" class="secondary-btn">Find bill</button></div>
+        <div id="bill-result"></div>
+        <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Rental ID</th><th>Borrower</th><th>Type</th><th>Total</th><th></th></tr></thead><tbody id="history-table"></tbody></table></div></div>
+      </section>
+
+      <section id="reports" class="view">
+        <div class="section-heading"><div><p class="eyebrow">PERFORMANCE</p><h2>Daily rental report</h2><p class="muted">A summary of all successful rentals in this server session.</p></div><button id="refresh-report" class="secondary-btn">↻ Refresh report</button></div>
+        <div class="report-grid"><article class="report-card"><p>Total rentals</p><strong id="report-rentals">0</strong></article><article class="report-card"><p>Total revenue</p><strong id="report-revenue">₹0.00</strong></article><article class="report-card"><p>Most popular equipment</p><strong id="report-popular">—</strong></article></div>
+        <div class="info-banner">Report data is stored in the Java server's memory. Restarting the server resets the session data.</div>
+      </section>
+
+
+      <section id="insights" class="view">
+        <div class="insight-hero">
+          <div><p class="eyebrow light">PLAYZONE INTELLIGENCE · STOCK GUARDIAN</p>
+            <h2>See the demand.<br><em>Stay one step ahead.</em></h2>
+            <p>Live inventory intelligence generated from actual rental activity in this session.</p>
+          </div>
+          <div class="insight-orbit"><span>✦</span><small>SMART<br>INSIGHTS</small></div>
+        </div>
+        <div class="insight-kpis">
+          <article class="insight-kpi"><span>LOW STOCK ITEMS</span><strong id="insight-low">0</strong><small>Items needing attention</small></article>
+          <article class="insight-kpi"><span>RENTAL RECORDS</span><strong id="insight-rentals">0</strong><small>Successful rentals this session</small></article>
+          <article class="insight-kpi"><span>TOP DEMAND ITEM</span><strong class="kpi-name" id="insight-leader">—</strong><small>By total units rented</small></article>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">DEMAND INTELLIGENCE</p><h2>Equipment demand map</h2><p class="muted">Relative demand is calculated from quantities actually rented in this session.</p></div><button id="refresh-insights" class="secondary-btn">↻ Refresh insights</button></div>
+        <div class="insight-panel"><div id="demand-bars" class="demand-bars"></div></div>
+        <div class="section-heading"><div><p class="eyebrow">PROACTIVE INVENTORY</p><h2>Smart restock advisor</h2><p class="muted">Suggested quantity restores each item to its initial inventory level.</p></div></div>
+        <div class="table-card"><div class="table-wrap"><table><thead><tr><th>Equipment</th><th>Available</th><th>Units rented</th><th>Stock signal</th><th>Suggested restock</th></tr></thead><tbody id="restock-table"></tbody></table></div></div>
+        <div class="insight-footnote"><strong>How this works:</strong> These are transparent, rule-based insights calculated from this session's rental records and the configured starting stock. They are not machine-learning forecasts. Rental history resets when the local Java server restarts.</div>
+      </section>
+
+
+      <section id="reality-rift" class="view">
+        <div class="rift-hero">
+          <div class="rift-copy">
+            <p class="eyebrow light">PLAYZONE · COUNTERFACTUAL INVENTORY ENGINE</p>
+            <h2>One inventory.<br><em>Three possible futures.</em></h2>
+            <p>Open parallel sports-room realities. Stress-test today's stock against tomorrow's imagined rush before you approve a rental or plan an event.</p>
+            <div class="rift-stamp"><span class="rift-pulse"></span> LIVE INVENTORY · SIMULATION ONLY</div>
+          </div>
+          <div class="rift-portal"><div class="portal-ring ring-one"></div><div class="portal-ring ring-two"></div><div class="portal-core">RIFT<br><small>ENGINE</small></div><span class="portal-label label-a">PRACTICE</span><span class="portal-label label-b">TOURNAMENT</span><span class="portal-label label-c">MONSOON</span></div>
+        </div>
+
+        <div class="rift-controls">
+          <div class="rift-control-head"><div><p class="eyebrow">TUNE THE UNIVERSE</p><h3>Choose the size of the chaos</h3><p class="muted">Change the crowd and pressure. The same live inventory is tested in every scenario.</p></div><span class="simulation-tag">WHAT-IF LAB</span></div>
+          <div class="rift-control-grid">
+            <div class="rift-slider-block"><div class="slider-label"><label for="rift-participants">Expected participants</label><strong id="rift-participants-value">30 people</strong></div><input id="rift-participants" type="range" min="10" max="120" step="5" value="30"><div class="range-labels"><span>10</span><span>120</span></div></div>
+            <div class="rift-slider-block"><div class="slider-label"><label for="rift-pressure">Chaos multiplier</label><strong id="rift-pressure-value">1.2×</strong></div><input id="rift-pressure" type="range" min="0.8" max="2.5" step="0.1" value="1.2"><div class="range-labels"><span>Calm · 0.8×</span><span>Wild · 2.5×</span></div></div>
+          </div>
+          <label class="rift-check"><input id="rift-include-draft" type="checkbox" checked><span><strong>Include my unsaved rental draft</strong><small>Test the future after the equipment currently selected on the New Rental page is issued.</small></span></label>
+          <div class="rift-actions"><button id="rift-run" class="primary-btn">◈ Open the three realities</button><span>Nothing is reserved, billed or deducted by a simulation.</span></div>
+        </div>
+
+        <div id="rift-meta" class="rift-meta">Set your scenario and open the realities to begin.</div>
+        <div id="rift-results" class="rift-results">
+          <div class="rift-empty"><div class="rift-empty-icon">◈</div><h3>The multiverse is waiting.</h3><p>Run the simulation to see whether your current equipment survives three different campus-day scenarios.</p></div>
+        </div>
+        <div class="rift-explain"><strong>Reality Rift logic:</strong> each future uses a visible, editable-in-code demand profile for a 30-person group. The app scales it by your crowd and chaos settings, then compares projected demand against current Java inventory (and optionally your unsaved draft). It is a deterministic scenario simulator, not a claim of machine-learning prediction.</div>
+      </section>
+
+
+      <section id="gamebond" class="view">
+        <div class="bond-hero">
+          <div><p class="eyebrow light">PLAYZONE SOCIAL · CAMPUS GAME MATCHMAKER</p>
+            <h2>Find your player.<br><em>Split the cost. Start the fun.</em></h2>
+            <p>Chess, carrom, badminton and more. Find people who want to play the same game, at a similar level and time, within your budget.</p>
+            <span class="bond-live"><i></i> <strong id="bond-member-total">50 DEMO MEMBERS</strong> · OPEN GAME CIRCLES</span>
+          </div>
+          <div class="bond-orbit"><span>♡</span><small>PLAY<br>TOGETHER</small></div>
+        </div>
+        <div class="bond-columns">
+          <div class="bond-panel">
+            <p class="eyebrow">YOUR PLAY PROFILE</p><h3>Find your people</h3>
+            <label>Your nickname<input id="bond-nickname" maxlength="22" placeholder="e.g. KnightRider"></label>
+            <label>Game<select id="bond-game"><option>Chess</option><option>Carrom</option><option>Badminton</option><option>Football</option><option>Basketball</option><option>Table Tennis</option><option>Volleyball</option><option>Cricket</option></select></label>
+            <label>Your skill level<select id="bond-skill"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></label>
+            <label>Preferred time<select id="bond-time"><option>Morning</option><option>Afternoon</option><option selected>Evening</option></select></label>
+            <label>Max amount you can pay (₹)<input id="bond-budget" type="number" min="0" max="100000" value="100"></label>
+            <button id="bond-find" class="primary-btn bond-full">♡ Find compatible players</button>
+            <p class="bond-hint">Matches are ranked by game, time, skill compatibility and your per-person budget. Join is your yes; Pass hides a group from your current discovery deck.</p>
+          </div>
+          <div class="bond-panel bond-create">
+            <p class="eyebrow">START A GAME</p><h3>Create your own group</h3>
+            <label>Game<select id="bond-host-game"><option>Chess</option><option>Carrom</option><option>Badminton</option><option>Football</option><option>Basketball</option><option>Table Tennis</option><option>Volleyball</option><option>Cricket</option></select></label>
+            <label>Skill level<select id="bond-host-skill"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></label>
+            <label>Time slot<select id="bond-host-time"><option>Morning</option><option>Afternoon</option><option selected>Evening</option></select></label>
+            <label>Players needed (including you)<input id="bond-max" type="number" min="2" max="10" value="2"></label>
+            <label>Estimated total expense (₹)<input id="bond-cost" type="number" min="0" max="100000" value="100"></label>
+            <button id="bond-create" class="secondary-btn bond-full">＋ Create game group</button>
+            <p class="bond-hint">Use the same nickname from your player profile. Expense sharing is an estimate, not a payment.</p>
+          </div>
+        </div>
+        <div class="bond-results-head"><div><p class="eyebrow">YOUR GAME DISCOVERY DECK</p><h3>Game circles picked for your vibe</h3><p class="muted">Join the group you like, or pass and explore the next one.</p></div><div class="bond-deck-tools"><span id="bond-match-count" class="bond-match-count">OPEN GROUPS</span><button id="bond-refresh" class="text-btn">↻ Refresh</button></div></div>
+        <div id="bond-results" class="bond-results"><div class="bond-empty"><span>♡</span><h3>Your next game buddy is out there.</h3><p>Set your profile and find an open group.</p></div></div>
+        <div class="bond-privacy"><strong>Respect & safety:</strong> GameBond uses nicknames only in this prototype. It does not expose phone numbers, email addresses or precise location. Confirm the venue and final expense with the group before meeting. Join requests are simulated locally; there is no chat or payment processing.</div>
+      </section>
+
+      <footer>PLAYZONE · JAVA 17 LOCAL RENTAL MANAGEMENT <span>Built for the sports room</span></footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <div id="bill-modal" class="modal hidden"><div class="modal-backdrop" data-close="true"></div><div class="modal-card"><button class="modal-close" data-close="true">×</button><div id="modal-content"></div><button id="print-bill" class="primary-btn full-btn">Print bill</button></div></div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
